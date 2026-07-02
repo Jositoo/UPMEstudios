@@ -1,41 +1,36 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import Card from './Card';
+import { saveStudySession } from '../app/actions';
 
 interface StudyTimerProps {
-  onSaveSession?: (durationMinutes: number) => void;
+  subjects: { id: string; name: string }[];
 }
 
-export default function StudyTimer({ onSaveSession }: StudyTimerProps) {
+export default function StudyTimer({ subjects }: StudyTimerProps) {
   const [seconds, setSeconds] = useState(0);
   const [isActive, setIsActive] = useState(false);
+  const [selectedSubject, setSelectedSubject] = useState(subjects.length > 0 ? subjects[0].id : '');
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
     if (isActive) {
-      interval = setInterval(() => {
-        setSeconds(s => s + 1);
-      }, 1000);
+      interval = setInterval(() => setSeconds(s => s + 1), 1000);
     } else if (!isActive && seconds !== 0 && interval) {
       clearInterval(interval);
     }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
+    return () => { if (interval) clearInterval(interval); };
   }, [isActive, seconds]);
 
-  const toggle = () => setIsActive(!isActive);
-
-  const reset = () => {
-    setIsActive(false);
-    setSeconds(0);
-  };
-
-  const save = () => {
-    if (onSaveSession && seconds >= 60) {
-      onSaveSession(Math.floor(seconds / 60));
+  const save = async () => {
+    if (seconds >= 60 && selectedSubject) {
+      setIsSaving(true);
+      await saveStudySession(Math.floor(seconds / 60), selectedSubject);
+      setIsSaving(false);
+      setIsActive(false);
+      setSeconds(0);
     }
-    reset();
   };
 
   const formatTime = (totalSeconds: number) => {
@@ -48,26 +43,28 @@ export default function StudyTimer({ onSaveSession }: StudyTimerProps) {
   return (
     <Card className="study-timer" title="Temporizador de Estudio">
       <div style={{ textAlign: 'center', padding: '20px 0' }}>
-        <div style={{ 
-          fontSize: '48px', 
-          fontFamily: 'var(--font-heading)',
-          fontWeight: 700,
-          color: isActive ? 'var(--accent-blue)' : 'var(--text-primary)',
-          textShadow: isActive ? '0 0 20px var(--accent-blue-glow)' : 'none',
-          marginBottom: '24px',
-          fontVariantNumeric: 'tabular-nums'
-        }}>
+        <div style={{ fontSize: '48px', fontWeight: 700, color: isActive ? 'var(--accent-blue)' : 'var(--text-primary)', marginBottom: '24px', fontVariantNumeric: 'tabular-nums' }}>
           {formatTime(seconds)}
         </div>
+        
+        {subjects.length > 0 ? (
+          <select 
+            value={selectedSubject} 
+            onChange={e => setSelectedSubject(e.target.value)}
+            style={{ marginBottom: '20px', padding: '8px', borderRadius: '6px', background: 'var(--bg-secondary)', color: 'var(--text-primary)', width: '100%', maxWidth: '250px' }}
+          >
+            {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+          </select>
+        ) : (
+          <div style={{ color: 'var(--text-muted)', marginBottom: '16px' }}>Añade asignaturas para registrar tiempo.</div>
+        )}
+
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-          <button className={isActive ? 'btn-secondary' : 'btn-primary'} onClick={toggle}>
+          <button className={isActive ? 'btn-secondary' : 'btn-primary'} onClick={() => setIsActive(!isActive)}>
             {isActive ? 'Pausar' : (seconds === 0 ? 'Iniciar' : 'Reanudar')}
           </button>
-          <button className="btn-secondary" onClick={save} disabled={seconds < 60}>
-            Guardar
-          </button>
-          <button className="btn-secondary" onClick={reset} style={{ opacity: 0.7 }}>
-            Reset
+          <button className="btn-secondary" onClick={save} disabled={seconds < 60 || !selectedSubject || isSaving}>
+            {isSaving ? 'Guardando...' : 'Guardar'}
           </button>
         </div>
       </div>
