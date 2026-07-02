@@ -64,7 +64,7 @@ export default function AnalyticsCharts({ passedCredits, subjects }: { passedCre
                 <XAxis dataKey="name" stroke="var(--text-muted)" tick={{fill: 'var(--text-muted)', fontSize: 12}} />
                 <YAxis stroke="var(--text-muted)" tick={{fill: 'var(--text-muted)'}} domain={[0, 10]} />
                 <RechartsTooltip 
-                  formatter={(value: number) => [`${value} / 10`, 'Nota Final']}
+                  formatter={(value: any) => [`${value} / 10`, 'Nota Final']}
                   labelFormatter={(label, payload) => payload?.[0]?.payload?.fullTitle || label}
                   contentStyle={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#fff' }}
                   itemStyle={{ color: 'var(--accent-blue)', fontWeight: 600 }}
