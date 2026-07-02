@@ -13,7 +13,7 @@ export default async function SubjectsPage() {
       include: { exams: true }
     });
   } catch (e) {
-    console.error("Error fetching subjects. DB likely not connected yet.");
+    console.error("DB Error in subjects/page:", e);
   }
 
   const activeSubjects = subjects.filter(s => s.status === 'ACTIVE' || !s.status);

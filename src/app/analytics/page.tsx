@@ -9,8 +9,8 @@ export default async function AnalyticsPage() {
   let subjects: any[] = [];
   try {
     subjects = await prisma.subject.findMany();
-  } catch (e) {
-    console.error("DB not connected yet.");
+  } catch(e) {
+    console.error("DB Error in analytics/page:", e);
   }
 
   const passedSubjects = subjects.filter(s => s.status === 'PASSED');

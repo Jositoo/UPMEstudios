@@ -14,7 +14,7 @@ export default async function ExamsPage() {
       orderBy: { date: 'asc' }
     });
   } catch(e) {
-    console.error("DB not connected");
+    console.error("DB Error in exams/page:", e);
   }
 
   return (

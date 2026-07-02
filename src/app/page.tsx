@@ -20,7 +20,7 @@ export default async function Home() {
       include: { subject: true }
     });
   } catch(e) {
-    console.error("DB not connected");
+    console.error("DB Error in page.tsx:", e);
   }
 
   return (
