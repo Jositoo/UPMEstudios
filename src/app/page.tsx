@@ -2,6 +2,7 @@ import React from 'react';
 import Card from '../components/Card';
 import SubjectBadge from '../components/SubjectBadge';
 import StudyTimer from '../components/StudyTimer';
+import CreditsChart from '../components/CreditsChart';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -22,6 +23,12 @@ export default async function Home() {
   } catch(e) {
     console.error("DB Error in page.tsx:", e);
   }
+
+  const passedCredits = subjects
+    .filter(s => s.status === 'PASSED')
+    .reduce((acc, s) => acc + s.credits, 0);
+  
+  const totalDegreeCredits = 240; // Default for Grado
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -86,10 +93,9 @@ export default async function Home() {
             )}
           </Card>
         </div>
-        
-        <Card title="Rendimiento Semanal">
-          <div style={{ height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
-            Empieza a registrar horas de estudio para ver gráficos aquí.
+        <Card title="Progreso de la Titulación (ECTS)">
+          <div style={{ height: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <CreditsChart passedCredits={passedCredits} totalCredits={totalDegreeCredits} />
           </div>
         </Card>
       </div>

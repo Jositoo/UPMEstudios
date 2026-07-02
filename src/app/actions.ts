@@ -59,3 +59,13 @@ export async function saveStudySession(duration: number, subjectId?: string) {
   revalidatePath('/');
   revalidatePath('/analytics');
 }
+
+export async function updateSubjectGrade(subjectId: string, finalGrade: number) {
+  const status = finalGrade >= 5 ? 'PASSED' : 'ACTIVE';
+  await prisma.subject.update({
+    where: { id: subjectId },
+    data: { finalGrade, status }
+  });
+  revalidatePath('/subjects');
+  revalidatePath('/');
+}

@@ -1,6 +1,7 @@
 import React from 'react';
 import Card from '../../components/Card';
 import SubjectBadge from '../../components/SubjectBadge';
+import GradeEditor from '../../components/GradeEditor';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 
@@ -68,10 +69,15 @@ export default async function SubjectsPage() {
 
         <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px', display: 'flex', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ color: 'var(--text-muted)', fontSize: '12px' }}>{isPassed ? 'Nota Final' : 'Nota Media Actual'}</div>
-            <div style={{ fontWeight: 700, fontSize: '20px', color: gradeDisplay !== '--' ? gradeColor : 'var(--text-primary)' }}>
-              {gradeDisplay} {gradeDisplay !== '--' && '/ 10'}
+            <div style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '8px' }}>
+              {isPassed ? 'Nota Final' : 'Nota Media Actual'}
             </div>
+            <GradeEditor 
+              subjectId={subject.id} 
+              initialGrade={gradeDisplay} 
+              isPassed={isPassed} 
+              gradeColor={gradeColor} 
+            />
           </div>
         </div>
       </Card>
