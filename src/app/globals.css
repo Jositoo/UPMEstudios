@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
-:root {
+:root, [data-theme="dark"] {
   /* UPM inspired premium dark palette */
   --bg-primary: #0a0d14;
   --bg-secondary: #121622;
@@ -20,6 +20,39 @@
   
   --font-sans: 'Inter', sans-serif;
   --font-heading: 'Outfit', sans-serif;
+  
+  --bg-radial-1: rgba(59, 130, 246, 0.15);
+  --bg-radial-2: rgba(234, 179, 8, 0.08);
+}
+
+[data-theme="midnight"] {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-glass: rgba(30, 41, 59, 0.7);
+  --accent-blue: #6366f1;
+  --accent-blue-glow: rgba(99, 102, 241, 0.5);
+  --bg-radial-1: rgba(99, 102, 241, 0.15);
+  --bg-radial-2: rgba(168, 85, 247, 0.08);
+}
+
+[data-theme="forest"] {
+  --bg-primary: #064e3b;
+  --bg-secondary: #065f46;
+  --bg-glass: rgba(6, 95, 70, 0.7);
+  --accent-blue: #10b981;
+  --accent-blue-glow: rgba(16, 185, 129, 0.5);
+  --bg-radial-1: rgba(16, 185, 129, 0.15);
+  --bg-radial-2: rgba(234, 179, 8, 0.08);
+}
+
+[data-theme="berry"] {
+  --bg-primary: #4a044e;
+  --bg-secondary: #701a75;
+  --bg-glass: rgba(112, 26, 117, 0.7);
+  --accent-blue: #d946ef;
+  --accent-blue-glow: rgba(217, 70, 239, 0.5);
+  --bg-radial-1: rgba(217, 70, 239, 0.15);
+  --bg-radial-2: rgba(244, 63, 94, 0.08);
 }
 
 * {
@@ -34,8 +67,8 @@ body {
   font-family: var(--font-sans);
   min-height: 100vh;
   background-image: 
-    radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(234, 179, 8, 0.08) 0px, transparent 50%);
+    radial-gradient(at 0% 0%, var(--bg-radial-1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, var(--bg-radial-2) 0px, transparent 50%);
   background-attachment: fixed;
   overflow-x: hidden;
 }

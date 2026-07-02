@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import ThemeSwitcher from './ThemeSwitcher';
 import './Sidebar.css';
 
 export default function Sidebar() {
@@ -18,7 +19,7 @@ export default function Sidebar() {
       <div className="sidebar-header">
         <div className="logo">
           <span className="logo-icon">🎓</span>
-          <h2>UPM Tracker</h2>
+          <h2>UPM <span>Tracker</span></h2>
         </div>
       </div>
       
@@ -43,6 +44,7 @@ export default function Sidebar() {
             <span className="user-role">Estudiante</span>
           </div>
         </div>
+        <ThemeSwitcher />
       </div>
     </aside>
   );

@@ -25,10 +25,13 @@
 
 .logo h2 {
   font-size: 22px;
-  background: linear-gradient(90deg, #3b82f6, #eab308);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text-primary);
+  font-weight: 700;
   margin: 0;
+  letter-spacing: -0.5px;
+}
+.logo h2 span {
+  color: var(--accent-blue);
 }
 
 .sidebar-nav {
