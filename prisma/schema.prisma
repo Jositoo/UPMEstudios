@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Subject {
+  id        String   @id @default(cuid())
+  name      String
+  credits   Int
+  professor String?
+  color     String   @default("#3B82F6") // Default blue
+  semester  String?
+  exams     Exam[]
+  sessions  StudySession[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Exam {
+  id        String   @id @default(cuid())
+  date      DateTime
+  type      String   // "Parcial", "Final", "Práctica"
+  grade     Float?
+  weight    Float    // e.g. 0.3 for 30%
+  subjectId String
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model StudySession {
+  id        String   @id @default(cuid())
+  date      DateTime @default(now())
+  duration  Int      // in minutes
+  notes     String?
+  subjectId String
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
