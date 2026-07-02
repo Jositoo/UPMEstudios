@@ -10,6 +10,7 @@ export const dynamic = 'force-dynamic';
 export default async function Home() {
   let subjects: any[] = [];
   let nextExam: any = null;
+  let todaySessions: any[] = [];
   try {
     subjects = await prisma.subject.findMany({
       include: { exams: true }
@@ -19,6 +20,13 @@ export default async function Home() {
       where: { date: { gte: new Date() } },
       orderBy: { date: 'asc' },
       include: { subject: true }
+    });
+
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    todaySessions = await prisma.studySession.findMany({
+      where: { date: { gte: startOfToday } }
     });
   } catch(e) {
     console.error("DB Error in page.tsx:", e);
@@ -30,6 +38,10 @@ export default async function Home() {
   
   const totalDegreeCredits = 240; // Default for Grado
 
+  const totalMinutesToday = todaySessions.reduce((acc, session) => acc + session.duration, 0);
+  const hoursToday = Math.floor(totalMinutesToday / 60);
+  const minsToday = totalMinutesToday % 60;
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <header>
@@ -39,9 +51,9 @@ export default async function Home() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
         <Card title="Horas de Estudio (Hoy)">
-          <div style={{ fontSize: '36px', fontWeight: 700, color: 'var(--accent-blue)' }}>0h 0m</div>
+          <div style={{ fontSize: '36px', fontWeight: 700, color: 'var(--accent-blue)' }}>{hoursToday}h {minsToday}m</div>
           <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginTop: '8px' }}>
-            Empieza una sesión para registrar tiempo.
+            {totalMinutesToday > 0 ? '¡Buen trabajo! Sigue así.' : 'Empieza una sesión para registrar tiempo.'}
           </p>
         </Card>
         
@@ -64,7 +76,7 @@ export default async function Home() {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <StudyTimer />
+          <StudyTimer subjects={subjects.map(s => ({ id: s.id, name: s.name }))} />
           
           <Card title="Asignaturas Activas">
             {subjects.length === 0 ? (
