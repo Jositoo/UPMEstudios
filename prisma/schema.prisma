@@ -10,16 +10,20 @@ datasource db {
 }
 
 model Subject {
-  id        String   @id @default(cuid())
-  name      String
-  credits   Int
-  professor String?
-  color     String   @default("#3B82F6") // Default blue
-  semester  String?
-  exams     Exam[]
-  sessions  StudySession[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  name        String
+  credits     Float
+  professor   String?
+  color       String   @default("#3B82F6")
+  semester    String?
+  status      String   @default("ACTIVE") // "ACTIVE", "PASSED"
+  finalGrade  Float?
+  attempts    Int      @default(1)
+  
+  exams       Exam[]
+  sessions    StudySession[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Exam {

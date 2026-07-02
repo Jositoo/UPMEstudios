@@ -5,15 +5,19 @@ import { redirect } from 'next/navigation';
 
 export async function addSubject(formData: FormData) {
   const name = formData.get('name') as string;
-  const credits = parseInt(formData.get('credits') as string);
+  const credits = parseFloat(formData.get('credits') as string);
   const color = formData.get('color') as string || '#3B82F6';
   const semester = formData.get('semester') as string;
   const professor = formData.get('professor') as string;
+  const status = formData.get('status') as string || 'ACTIVE';
+  const attempts = parseInt(formData.get('attempts') as string) || 1;
+  const finalGradeRaw = formData.get('finalGrade') as string;
+  const finalGrade = finalGradeRaw ? parseFloat(finalGradeRaw) : null;
   
-  if (!name || !credits) return;
+  if (!name || isNaN(credits)) return;
 
   await prisma.subject.create({
-    data: { name, credits, color, semester, professor }
+    data: { name, credits, color, semester, professor, status, attempts, finalGrade }
   });
   
   revalidatePath('/subjects');

@@ -1,58 +1,59 @@
-'use client';
 import React from 'react';
 import Card from '../../components/Card';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { prisma } from '@/lib/prisma';
+import AnalyticsCharts from './AnalyticsCharts';
 
-const data = [
-  { name: 'Lun', horas: 2.5 },
-  { name: 'Mar', horas: 3.8 },
-  { name: 'Mié', horas: 1.5 },
-  { name: 'Jue', horas: 4.2 },
-  { name: 'Vie', horas: 3.0 },
-  { name: 'Sáb', horas: 6.5 },
-  { name: 'Dom', horas: 5.0 },
-];
+export const dynamic = 'force-dynamic';
 
-export default function AnalyticsPage() {
+export default async function AnalyticsPage() {
+  let subjects: any[] = [];
+  try {
+    subjects = await prisma.subject.findMany();
+  } catch (e) {
+    console.error("DB not connected yet.");
+  }
+
+  const passedSubjects = subjects.filter(s => s.status === 'PASSED');
+  const passedCredits = passedSubjects.reduce((acc, curr) => acc + curr.credits, 0);
+  
+  let mediaGlobal = '--';
+  const gradedSubjects = passedSubjects.filter(s => s.finalGrade !== null);
+  if (gradedSubjects.length > 0) {
+    const sum = gradedSubjects.reduce((acc, curr) => acc + curr.finalGrade, 0);
+    mediaGlobal = (sum / gradedSubjects.length).toFixed(2);
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <header>
-        <h1 style={{ fontSize: '32px', marginBottom: '8px' }}>Estadísticas 📈</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>Visualiza tu rendimiento y tiempo de estudio.</p>
+        <h1 style={{ fontSize: '32px', marginBottom: '8px' }}>Estadísticas del Grado 📈</h1>
+        <p style={{ color: 'var(--text-secondary)' }}>Visualiza tu progreso hacia el título.</p>
       </header>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
         <Card>
-          <div style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '8px' }}>Total Horas (Semana)</div>
-          <div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--accent-blue)' }}>26h 30m</div>
+          <div style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '8px' }}>Créditos Superados</div>
+          <div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--accent-blue)' }}>
+            {passedCredits} <span style={{ fontSize: '20px', color: 'var(--text-muted)', fontWeight: 500 }}>/ 240</span>
+          </div>
         </Card>
+        
         <Card>
-          <div style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '8px' }}>Asignatura Más Estudiada</div>
-          <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--accent-yellow)', marginBottom: '4px' }}>Cálculo II</div>
-          <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>12h esta semana</div>
+          <div style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '8px' }}>Asignaturas Aprobadas</div>
+          <div style={{ fontSize: '32px', fontWeight: 700, color: '#10b981' }}>
+            {passedSubjects.length}
+          </div>
         </Card>
+
         <Card>
-          <div style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '8px' }}>Racha Actual</div>
-          <div style={{ fontSize: '32px', fontWeight: 700, color: '#10b981' }}>5 Días 🔥</div>
+          <div style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '8px' }}>Nota Media Global (Expediente)</div>
+          <div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--accent-yellow)' }}>
+            {mediaGlobal} <span style={{ fontSize: '20px', color: 'var(--text-muted)', fontWeight: 500 }}>/ 10</span>
+          </div>
         </Card>
       </div>
 
-      <Card title="Tiempo de Estudio (Últimos 7 días)" className="h-96">
-        <div style={{ height: '400px', width: '100%', marginTop: '20px' }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
-              <XAxis dataKey="name" stroke="var(--text-muted)" tick={{fill: 'var(--text-muted)'}} />
-              <YAxis stroke="var(--text-muted)" tick={{fill: 'var(--text-muted)'}} />
-              <Tooltip 
-                contentStyle={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
-                itemStyle={{ color: 'var(--accent-blue)', fontWeight: 600 }}
-              />
-              <Bar dataKey="horas" fill="var(--accent-blue)" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </Card>
+      <AnalyticsCharts passedCredits={passedCredits} subjects={subjects} />
     </div>
   );
 }
